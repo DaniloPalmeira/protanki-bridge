@@ -1,0 +1,12 @@
+{
+	"name": "protanki-bridge",
+	"version": "1.0.0",
+	"description": "You create a bridge between protanki and you",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}
