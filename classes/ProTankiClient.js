@@ -91,26 +91,27 @@ class ProTankiClient {
 			this.rawDataReceived.write(data);
 		}
 
-		var possibleLen = this.rawDataReceived.readInt() - 4;
+		var rawLen = this.rawDataReceived.readInt();
+		var lenFlags = rawLen & 0xc0000000;
+		var possibleLen = (rawLen & 0x3fffffff) - 4;
 
 		if (this.rawDataReceived.bytesAvailable() >= possibleLen) {
 			var _data = new ByteArray(this.rawDataReceived.readBytes(possibleLen));
-			this.parsePacket(_data);
+			this.parsePacket(_data, lenFlags);
 			if (this.rawDataReceived.bytesAvailable() > 0) {
 				await this.onDataReceived();
 			}
 		} else {
-			this.rawDataReceived.writeIntStart(possibleLen + 4);
+			this.rawDataReceived.writeIntStart(rawLen);
 			console.log(
 				"Pacote imcompleto",
-				possibleLen - 4,
-				this.rawDataReceived.bytesAvailable(),
-				this.rawDataReceived
+				possibleLen,
+				this.rawDataReceived.bytesAvailable()
 			);
 		}
 	}
 
-	parsePacket(packet) {
+	parsePacket(packet, lenFlags = 0) {
 		const packetID = packet.readInt();
 		console.log("[protanki-local]:", packetName(packetID), packetID);
 
@@ -133,7 +134,7 @@ class ProTankiClient {
 				packet.writeObject(showBattleObj);
 			}
 
-			this.server.sendPacket(packetID, packet);
+			this.server.sendPacket(packetID, packet, true, lenFlags);
 		}
 	}
 

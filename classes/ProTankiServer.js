@@ -102,7 +102,8 @@ class ProTankiServer {
 			this.rawDataReceived.write(data);
 		}
 
-		var possibleLen = this.rawDataReceived.readInt() - 4;
+		var rawLen = this.rawDataReceived.readInt();
+		var possibleLen = (rawLen & 0x3fffffff) - 4;
 
 		if (this.rawDataReceived.bytesAvailable() >= possibleLen) {
 			var _data = new ByteArray(this.rawDataReceived.readBytes(possibleLen));
@@ -111,7 +112,7 @@ class ProTankiServer {
 				await this.onDataReceived();
 			}
 		} else {
-			this.rawDataReceived.writeIntStart(possibleLen + 4);
+			this.rawDataReceived.writeIntStart(rawLen);
 		}
 	}
 
@@ -127,14 +128,14 @@ class ProTankiServer {
 		this.client.sendPacket(packetID, packet);
 	}
 
-	sendPacket(packetID, packet = new ByteArray(), encryption = true) {
+	sendPacket(packetID, packet = new ByteArray(), encryption = true, lenFlags = 0) {
 		console.log("[local-client]:", packetName(packetID), packetID);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}
 
 		var byteA = new ByteArray()
-			.writeInt(packet.buffer.length + 8)
+			.writeUInt((packet.buffer.length + 8) | lenFlags)
 			.writeInt(packetID)
 			.write(packet.buffer).buffer;
 
