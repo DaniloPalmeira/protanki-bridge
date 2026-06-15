@@ -1,6 +1,9 @@
 const net = require("node:net");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
+const PluginManager = require("./PluginManager");
+
+const plugins = new PluginManager();
 
 class ProTankiClient {
 	rawDataReceived = new ByteArray();
@@ -120,19 +123,7 @@ class ProTankiClient {
 		} else {
 			this.decryptPacket(packet);
 
-			// Here you make changes to the packet received by protanki before sending it to your game
-
-			// In this example you disable autobalance
-			if (packetID == 546722394) {
-				const _packet = new ByteArray();
-				_packet.write(packet.buffer);
-				const showBattleObj = _packet.readObject();
-				if ("autoBalance" in showBattleObj) {
-					showBattleObj.autoBalance = false;
-				}
-				packet = new ByteArray();
-				packet.writeObject(showBattleObj);
-			}
+			packet = plugins.run("in", packetID, packet);
 
 			this.server.sendPacket(packetID, packet, true, lenFlags);
 		}

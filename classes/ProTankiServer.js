@@ -1,6 +1,9 @@
 const ProTankiClient = require("./ProTankiClient");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
+const PluginManager = require("./PluginManager");
+
+const plugins = new PluginManager();
 
 class ProTankiServer {
 	decrypt_position = 0;
@@ -123,7 +126,7 @@ class ProTankiServer {
 
 		console.log("[client-local]:", packetName(packetID), packetID);
 
-		// Here you make changes to the package received by your game before sending it to protanki
+		packet = plugins.run("out", packetID, packet);
 
 		this.client.sendPacket(packetID, packet);
 	}
