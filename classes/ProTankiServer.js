@@ -132,7 +132,7 @@ class ProTankiServer {
 
 		const name = packetName(packetID, packet);
 		console.log("[client-local]:", name, packetID);
-		this.logger.packet("client→server", name, packetID);
+		this.logger.packet("client→server", name, packetID, packet.buffer);
 		this.recorder.record("client→server", packetID, packet);
 
 		packet = plugins.run("out", packetID, packet);
@@ -143,7 +143,7 @@ class ProTankiServer {
 	sendPacket(packetID, packet = new ByteArray(), encryption = true, lenFlags = 0) {
 		const name = packetName(packetID);
 		console.log("[local-client]:", name, packetID);
-		this.logger.packet("server→client", name, packetID);
+		this.logger.packet("server→client", name, packetID, packet.buffer);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}

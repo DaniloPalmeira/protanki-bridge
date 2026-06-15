@@ -119,14 +119,17 @@ class ProTankiClient {
 	parsePacket(packet, lenFlags = 0) {
 		const packetID = packet.readInt();
 		const name = packetName(packetID, packet);
-		console.log("[protanki-local]:", name, packetID);
-		this.logger.packet("server→client", name, packetID);
-		this.recorder.record("server→client", packetID, packet);
 
 		if (packetID == 2001736388) {
+			this.logger.packet("server→client", name, packetID, packet.buffer);
+			this.recorder.record("server→client", packetID, packet);
+			console.log("[protanki-local]:", name, packetID);
 			this.readReceivedKeys(packet);
 		} else {
 			this.decryptPacket(packet);
+			this.logger.packet("server→client", name, packetID, packet.buffer);
+			this.recorder.record("server→client", packetID, packet);
+			console.log("[protanki-local]:", name, packetID);
 
 			packet = plugins.run("in", packetID, packet);
 
@@ -148,7 +151,7 @@ class ProTankiClient {
 	sendPacket(packetID, packet = new ByteArray(), encryption = true) {
 		const name = packetName(packetID);
 		console.log("[local-protanki]:", name, packetID);
-		this.logger.packet("client→server", name, packetID);
+		this.logger.packet("client→server", name, packetID, packet.buffer);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}
