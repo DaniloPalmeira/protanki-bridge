@@ -96,9 +96,9 @@ const PACKETS = {
 
 const { track } = require("./unknownPackets");
 
-function packetName(id) {
+function packetName(id, packet = null) {
 	if (PACKETS[id]) return PACKETS[id];
-	track(id);
+	track(id, packet);
 	return `UNKNOWN(${id})`;
 }
 

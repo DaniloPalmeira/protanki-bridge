@@ -119,7 +119,7 @@ class ProTankiClient {
 
 	parsePacket(packet, lenFlags = 0) {
 		const packetID = packet.readInt();
-		const name = packetName(packetID);
+		const name = packetName(packetID, packet);
 		console.log("[protanki-local]:", name, packetID);
 		this.logger.packet("server→client", name, packetID);
 

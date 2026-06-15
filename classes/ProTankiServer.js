@@ -129,7 +129,7 @@ class ProTankiServer {
 
 		this.decryptPacket(packet);
 
-		const name = packetName(packetID);
+		const name = packetName(packetID, packet);
 		console.log("[client-local]:", name, packetID);
 		this.logger.packet("client→server", name, packetID);
 
