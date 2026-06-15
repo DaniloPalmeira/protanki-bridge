@@ -85,4 +85,4 @@ class PluginManager {
 	}
 }
 
-module.exports = PluginManager;
+module.exports = new PluginManager();

@@ -1,11 +1,9 @@
 const ProTankiClient = require("./ProTankiClient");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
-const PluginManager = require("./PluginManager");
+const plugins = require("./PluginManager");
 const SessionLogger = require("./SessionLogger");
 const { SessionRecorder } = require("./SessionRecorder");
-
-const plugins = new PluginManager();
 
 class ProTankiServer {
 	decrypt_position = 0;

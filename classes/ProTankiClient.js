@@ -1,9 +1,7 @@
 const net = require("node:net");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
-const PluginManager = require("./PluginManager");
-
-const plugins = new PluginManager();
+const plugins = require("./PluginManager");
 
 class ProTankiClient {
 	rawDataReceived = new ByteArray();
