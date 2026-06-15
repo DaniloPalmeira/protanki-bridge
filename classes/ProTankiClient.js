@@ -1,5 +1,6 @@
 const net = require("node:net");
 const ByteArray = require("./ByteArray");
+const { packetName } = require("./packets");
 
 class ProTankiClient {
 	rawDataReceived = new ByteArray();
@@ -17,7 +18,7 @@ class ProTankiClient {
 		this.server = server;
 
 		this.socket = net.createConnection(
-			{ host: "146.59.110.195", port: 1337 },
+			{ host: "194.67.196.216", port: 25565 },
 			() => {
 				console.log("Connected to game server");
 			}
@@ -111,7 +112,7 @@ class ProTankiClient {
 
 	parsePacket(packet) {
 		const packetID = packet.readInt();
-		console.log("[protanki-local]:", packetID);
+		console.log("[protanki-local]:", packetName(packetID), packetID);
 
 		if (packetID == 2001736388) {
 			this.readReceivedKeys(packet);
@@ -148,7 +149,7 @@ class ProTankiClient {
 	}
 
 	sendPacket(packetID, packet = new ByteArray(), encryption = true) {
-		console.log("[local-protanki]:", packetID);
+		console.log("[local-protanki]:", packetName(packetID), packetID);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}

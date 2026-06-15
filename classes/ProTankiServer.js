@@ -1,5 +1,6 @@
 const ProTankiClient = require("./ProTankiClient");
 const ByteArray = require("./ByteArray");
+const { packetName } = require("./packets");
 
 class ProTankiServer {
 	decrypt_position = 0;
@@ -119,7 +120,7 @@ class ProTankiServer {
 
 		this.decryptPacket(packet);
 
-		console.log("[client-local]:", packetID);
+		console.log("[client-local]:", packetName(packetID), packetID);
 
 		// Here you make changes to the package received by your game before sending it to protanki
 
@@ -127,7 +128,7 @@ class ProTankiServer {
 	}
 
 	sendPacket(packetID, packet = new ByteArray(), encryption = true) {
-		console.log("[local-client]:", packetID);
+		console.log("[local-client]:", packetName(packetID), packetID);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}
