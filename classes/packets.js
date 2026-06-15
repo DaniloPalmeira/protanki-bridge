@@ -7,6 +7,7 @@ const PACKETS = {
 	"-1864333717": "SetLangPacket",
 	1484572481: "PongPacket",
 	"-82304134": "DependenciesLoadedPacket",
+	"-1376947245": "NextTipPacket",
 };
 
 function packetName(id) {
