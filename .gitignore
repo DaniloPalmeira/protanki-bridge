@@ -3,3 +3,4 @@ p-code
 plugins/*
 !plugins/disable-autobalance.js
 node_modules/
+unknown-packets.json

@@ -55,8 +55,12 @@ const PACKETS = {
 	"-349828108": "GetNewCaptchaPacket",
 };
 
+const { track } = require("./unknownPackets");
+
 function packetName(id) {
-	return PACKETS[id] ?? `UNKNOWN(${id})`;
+	if (PACKETS[id]) return PACKETS[id];
+	track(id);
+	return `UNKNOWN(${id})`;
 }
 
 module.exports = { PACKETS, packetName };
