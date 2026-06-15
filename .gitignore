@@ -2,5 +2,6 @@ actionscript
 p-code
 plugins/*
 !plugins/disable-autobalance.js
+!plugins/log-login.js
 node_modules/
 unknown-packets.json
