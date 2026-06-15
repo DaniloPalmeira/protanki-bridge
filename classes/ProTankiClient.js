@@ -17,12 +17,14 @@ class ProTankiClient {
 	decrypt_keys = new Array(8);
 	encrypt_keys = new Array(8);
 
-	constructor(server) {
+	constructor(server, logger) {
 		this.server = server;
+		this.logger = logger;
 
 		this.socket = net.createConnection(
 			{ host: "194.67.196.216", port: 25565 },
 			() => {
+				this.logger.info("Connected to game server");
 				console.log("Connected to game server");
 			}
 		);
@@ -31,6 +33,7 @@ class ProTankiClient {
 		});
 		this.socket.on("end", () => {
 			this.server.socket.end();
+			this.logger.info("Disconnected from game server");
 			console.log("Disconnected from game server");
 		});
 	}
@@ -116,7 +119,9 @@ class ProTankiClient {
 
 	parsePacket(packet, lenFlags = 0) {
 		const packetID = packet.readInt();
-		console.log("[protanki-local]:", packetName(packetID), packetID);
+		const name = packetName(packetID);
+		console.log("[protanki-local]:", name, packetID);
+		this.logger.packet("server→client", name, packetID);
 
 		if (packetID == 2001736388) {
 			this.readReceivedKeys(packet);
@@ -141,7 +146,9 @@ class ProTankiClient {
 	}
 
 	sendPacket(packetID, packet = new ByteArray(), encryption = true) {
-		console.log("[local-protanki]:", packetName(packetID), packetID);
+		const name = packetName(packetID);
+		console.log("[local-protanki]:", name, packetID);
+		this.logger.packet("client→server", name, packetID);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}

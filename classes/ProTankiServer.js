@@ -2,6 +2,7 @@ const ProTankiClient = require("./ProTankiClient");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
 const PluginManager = require("./PluginManager");
+const SessionLogger = require("./SessionLogger");
 
 const plugins = new PluginManager();
 
@@ -15,10 +16,12 @@ class ProTankiServer {
 	constructor(data) {
 		Object.assign(this, data);
 
-		this.client = new ProTankiClient(this);
+		this.logger = new SessionLogger();
+		this.client = new ProTankiClient(this, this.logger);
 
 		this.rawDataReceived = new ByteArray(Buffer.alloc(0));
 
+		this.logger.info(`Client connected: ${this.socket.remoteAddress}`);
 		console.log("Connected with client", this.socket.remoteAddress);
 
 		this.socket.on("data", (data) => this.onDataReceived(data));
@@ -28,6 +31,8 @@ class ProTankiServer {
 
 	onConnectionClose() {
 		this.client.socket.end();
+		this.logger.info(`Client disconnected: ${this.socket.remoteAddress}`);
+		this.logger.close();
 		console.log("Disconnected from client", this.socket.remoteAddress);
 	}
 
@@ -124,7 +129,9 @@ class ProTankiServer {
 
 		this.decryptPacket(packet);
 
-		console.log("[client-local]:", packetName(packetID), packetID);
+		const name = packetName(packetID);
+		console.log("[client-local]:", name, packetID);
+		this.logger.packet("client→server", name, packetID);
 
 		packet = plugins.run("out", packetID, packet);
 
@@ -132,7 +139,9 @@ class ProTankiServer {
 	}
 
 	sendPacket(packetID, packet = new ByteArray(), encryption = true, lenFlags = 0) {
-		console.log("[local-client]:", packetName(packetID), packetID);
+		const name = packetName(packetID);
+		console.log("[local-client]:", name, packetID);
+		this.logger.packet("server→client", name, packetID);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}

@@ -5,3 +5,4 @@ plugins/*
 !plugins/log-login.js
 node_modules/
 unknown-packets.json
+logs/
