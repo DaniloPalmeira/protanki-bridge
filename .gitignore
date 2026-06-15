@@ -6,3 +6,4 @@ plugins/*
 node_modules/
 unknown-packets.json
 logs/
+recordings/

@@ -3,6 +3,7 @@ const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
 const PluginManager = require("./PluginManager");
 const SessionLogger = require("./SessionLogger");
+const { SessionRecorder } = require("./SessionRecorder");
 
 const plugins = new PluginManager();
 
@@ -17,7 +18,8 @@ class ProTankiServer {
 		Object.assign(this, data);
 
 		this.logger = new SessionLogger();
-		this.client = new ProTankiClient(this, this.logger);
+		this.recorder = new SessionRecorder();
+		this.client = new ProTankiClient(this, this.logger, this.recorder);
 
 		this.rawDataReceived = new ByteArray(Buffer.alloc(0));
 
@@ -33,6 +35,7 @@ class ProTankiServer {
 		this.client.socket.end();
 		this.logger.info(`Client disconnected: ${this.socket.remoteAddress}`);
 		this.logger.close();
+		this.recorder.close();
 		console.log("Disconnected from client", this.socket.remoteAddress);
 	}
 
@@ -132,6 +135,7 @@ class ProTankiServer {
 		const name = packetName(packetID, packet);
 		console.log("[client-local]:", name, packetID);
 		this.logger.packet("client→server", name, packetID);
+		this.recorder.record("client→server", packetID, packet);
 
 		packet = plugins.run("out", packetID, packet);
 

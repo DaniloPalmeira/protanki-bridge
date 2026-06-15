@@ -17,9 +17,10 @@ class ProTankiClient {
 	decrypt_keys = new Array(8);
 	encrypt_keys = new Array(8);
 
-	constructor(server, logger) {
+	constructor(server, logger, recorder) {
 		this.server = server;
 		this.logger = logger;
+		this.recorder = recorder;
 
 		this.socket = net.createConnection(
 			{ host: "194.67.196.216", port: 25565 },
@@ -122,6 +123,7 @@ class ProTankiClient {
 		const name = packetName(packetID, packet);
 		console.log("[protanki-local]:", name, packetID);
 		this.logger.packet("server→client", name, packetID);
+		this.recorder.record("server→client", packetID, packet);
 
 		if (packetID == 2001736388) {
 			this.readReceivedKeys(packet);
