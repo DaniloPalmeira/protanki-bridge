@@ -1,8 +1,11 @@
 const net = require("node:net");
+const zlib = require("node:zlib");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
 const { validate } = require("./schemas/index");
 const plugins = require("./PluginManager");
+
+const FLAG_DEFLATE = 0x40000000;
 
 class ProTankiClient {
 	rawDataReceived = new ByteArray();
@@ -128,6 +131,10 @@ class ProTankiClient {
 			this.readReceivedKeys(packet);
 		} else {
 			this.decryptPacket(packet);
+			if (lenFlags & FLAG_DEFLATE) {
+				packet = new ByteArray(zlib.inflateRawSync(packet.buffer));
+				lenFlags &= ~FLAG_DEFLATE;
+			}
 			this.logger.packet("server→client", name, packetID, packet.buffer);
 			this.recorder.record("server→client", packetID, packet);
 			console.log("[protanki-local]:", name, packetID);

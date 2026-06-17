@@ -4,7 +4,7 @@ const {
 	readUTF,  writeUTF,
 } = require("../ByteArray").prototype;
 
-const { listOf, objectListOf } = require("./helpers");
+const { listOf } = require("./helpers");
 
 const { read: readByteList, write: writeByteList } = listOf(readByte, writeByte);
 
@@ -21,13 +21,8 @@ module.exports = {
 		alias: "loadDependencies",
 		direction: "in",
 		fields: [
-			{
-				name: "dependencies",
-				...objectListOf([
-					{ name: "type",    read: readUTF, write: writeUTF },
-					{ name: "version", read: readInt, write: writeInt },
-				]),
-			},
+			{ name: "dependencies", read: readUTF, write: writeUTF },
+			{ name: "version",      read: readInt, write: writeInt },
 		],
 	},
 	"-555602629":  { alias: "ping",             direction: "in",  fields: [] },
