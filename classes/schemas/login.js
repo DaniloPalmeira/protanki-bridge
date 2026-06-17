@@ -4,7 +4,7 @@ const {
 	readInt,     writeInt,
 } = require("../ByteArray").prototype;
 
-const { listOf } = require("./helpers");
+const { listOf, readResourceId, writeResourceId } = require("./helpers");
 
 const { read: readCaptchaLocation, write: writeCaptchaLocation } = listOf(readInt, writeInt);
 
@@ -14,10 +14,10 @@ module.exports = {
 		alias: "initRegistrationModel",
 		direction: "in",
 		fields: [
-			{ name: "backgroundResourceId", read: readUTF,     write: writeUTF     },
-			{ name: "emailRequired",        read: readBoolean,  write: writeBoolean },
-			{ name: "minPasswordLength",    read: readInt,      write: writeInt     },
-			{ name: "maxPasswordLength",    read: readInt,      write: writeInt     },
+			{ name: "backgroundResourceId", read: readResourceId, write: writeResourceId },
+			{ name: "emailRequired",        read: readBoolean,    write: writeBoolean    },
+			{ name: "minPasswordLength",    read: readInt,        write: writeInt        },
+			{ name: "maxPasswordLength",    read: readInt,        write: writeInt        },
 		],
 	},
 	321971701: {

@@ -4,9 +4,13 @@ const {
 	readUTF,  writeUTF,
 } = require("../ByteArray").prototype;
 
-const { listOf } = require("./helpers");
+const { listOf, objectListOf, readResourceId, writeResourceId } = require("./helpers");
 
-const { read: readByteList, write: writeByteList } = listOf(readByte, writeByte);
+const { read: readByteList,     write: writeByteList     } = listOf(readByte, writeByte);
+const { read: readExternalList, write: writeExternalList } = objectListOf([
+	{ name: "url",      read: readUTF, write: writeUTF },
+	{ name: "provider", read: readUTF, write: writeUTF },
+]);
 
 module.exports = {
 	// server → client
@@ -25,13 +29,20 @@ module.exports = {
 			{ name: "version",      read: readInt, write: writeInt },
 		],
 	},
+	"-1715719586": {
+		alias: "initExternalModel",
+		direction: "in",
+		fields: [
+			{ name: "links", read: readExternalList, write: writeExternalList },
+		],
+	},
 	"-555602629":  { alias: "ping",             direction: "in",  fields: [] },
 	"-1282173466": { alias: "onResourceLoaded", direction: "in",  fields: [] },
 	2094741924: {
 		alias: "initTipsModel",
 		direction: "in",
 		fields: [
-			{ name: "previewResourceId", read: readUTF, write: writeUTF },
+			{ name: "previewResourceId", read: readResourceId, write: writeResourceId },
 		],
 	},
 	"-1376947245": { alias: "nextTip",          direction: "in",  fields: [] },

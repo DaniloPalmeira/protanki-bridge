@@ -58,4 +58,8 @@ function objectListOf(fields) {
 	};
 }
 
-module.exports = { listOf, objectListOf };
+// Resource IDs on wire are encoded as two int32s: { high, low }
+function readResourceId() { return { high: this.readInt(), low: this.readInt() }; }
+function writeResourceId(v) { this.writeInt(v.high); this.writeInt(v.low); }
+
+module.exports = { listOf, objectListOf, readResourceId, writeResourceId };
