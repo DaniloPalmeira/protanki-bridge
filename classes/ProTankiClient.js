@@ -135,10 +135,9 @@ class ProTankiClient {
 				packet = new ByteArray(zlib.inflateRawSync(packet.buffer));
 				lenFlags &= ~FLAG_DEFLATE;
 			}
-			this.logger.packet("server→client", name, packetID, packet.buffer);
-			this.recorder.record("server→client", packetID, packet);
-
 			const fields = parse(packetID, packet);
+			this.logger.packet("server→client", name, packetID, packet.buffer, fields);
+			this.recorder.record("server→client", packetID, packet);
 			console.log(`← ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
 			validate(packetID, packet, name);

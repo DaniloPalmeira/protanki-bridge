@@ -132,10 +132,9 @@ class ProTankiServer {
 		this.decryptPacket(packet);
 
 		const name = packetName(packetID, packet);
-		this.logger.packet("client→server", name, packetID, packet.buffer);
-		this.recorder.record("client→server", packetID, packet);
-
 		const fields = parse(packetID, packet);
+		this.logger.packet("client→server", name, packetID, packet.buffer, fields);
+		this.recorder.record("client→server", packetID, packet);
 		console.log(`→ ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
 		validate(packetID, packet, name);

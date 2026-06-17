@@ -25,11 +25,11 @@ class SessionLogger {
 		this.#stream.write(JSON.stringify(obj) + "\n");
 	}
 
-	packet(direction, name, id, payload = null) {
+	packet(direction, name, id, payload = null, fields = null) {
 		const buf  = payload ? (Buffer.isBuffer(payload) ? payload : Buffer.from(payload)) : null;
 		const size = buf?.length ?? 0;
 
-		this.#write({
+		const entry = {
 			type: "packet",
 			ts:   new Date().toISOString(),
 			dir:  direction,
@@ -37,7 +37,10 @@ class SessionLogger {
 			id,
 			size,
 			hex:  buf?.toString("hex") ?? "",
-		});
+		};
+		if (fields !== null) entry.fields = fields;
+
+		this.#write(entry);
 
 		const bucket = this.#stats[direction];
 		bucket[name] = (bucket[name] ?? 0) + 1;
