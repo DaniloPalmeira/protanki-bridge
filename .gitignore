@@ -6,5 +6,6 @@ plugins/*
 !plugins/log-login.js
 node_modules/
 unknown-packets.json
+incomplete-packets.json
 logs/
 recordings/
