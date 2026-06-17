@@ -1,5 +1,6 @@
 actionscript
 p-code
+server/
 plugins/*
 !plugins/disable-autobalance.js
 !plugins/log-login.js

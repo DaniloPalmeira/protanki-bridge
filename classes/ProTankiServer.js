@@ -1,6 +1,7 @@
 const ProTankiClient = require("./ProTankiClient");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
+const { validate } = require("./schemas/index");
 const plugins = require("./PluginManager");
 const SessionLogger = require("./SessionLogger");
 const { SessionRecorder } = require("./SessionRecorder");
@@ -134,6 +135,8 @@ class ProTankiServer {
 		console.log("[client-local]:", name, packetID);
 		this.logger.packet("client→server", name, packetID, packet.buffer);
 		this.recorder.record("client→server", packetID, packet);
+
+		validate(packetID, packet, name);
 
 		packet = plugins.run("out", packetID, packet);
 

@@ -1,6 +1,7 @@
 const net = require("node:net");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
+const { validate } = require("./schemas/index");
 const plugins = require("./PluginManager");
 
 class ProTankiClient {
@@ -130,6 +131,8 @@ class ProTankiClient {
 			this.logger.packet("server→client", name, packetID, packet.buffer);
 			this.recorder.record("server→client", packetID, packet);
 			console.log("[protanki-local]:", name, packetID);
+
+			validate(packetID, packet, name);
 
 			packet = plugins.run("in", packetID, packet);
 
