@@ -1,7 +1,7 @@
 const ProTankiClient = require("./ProTankiClient");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
-const { validate } = require("./schemas/index");
+const { validate, parse, format } = require("./schemas/index");
 const plugins = require("./PluginManager");
 const SessionLogger = require("./SessionLogger");
 const { SessionRecorder } = require("./SessionRecorder");
@@ -132,9 +132,11 @@ class ProTankiServer {
 		this.decryptPacket(packet);
 
 		const name = packetName(packetID, packet);
-		console.log("[client-local]:", name, packetID);
 		this.logger.packet("client→server", name, packetID, packet.buffer);
 		this.recorder.record("client→server", packetID, packet);
+
+		const fields = parse(packetID, packet);
+		console.log(`→ ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
 		validate(packetID, packet, name);
 
@@ -144,9 +146,6 @@ class ProTankiServer {
 	}
 
 	sendPacket(packetID, packet = new ByteArray(), encryption = true, lenFlags = 0) {
-		const name = packetName(packetID);
-		console.log("[local-client]:", name, packetID);
-		this.logger.packet("server→client", name, packetID, packet.buffer);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}

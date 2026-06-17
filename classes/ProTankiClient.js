@@ -2,7 +2,7 @@ const net = require("node:net");
 const zlib = require("node:zlib");
 const ByteArray = require("./ByteArray");
 const { packetName } = require("./packets");
-const { validate } = require("./schemas/index");
+const { validate, parse, format } = require("./schemas/index");
 const plugins = require("./PluginManager");
 
 const FLAG_DEFLATE = 0x40000000;
@@ -127,7 +127,7 @@ class ProTankiClient {
 		if (packetID == 2001736388) {
 			this.logger.packet("server→client", name, packetID, packet.buffer);
 			this.recorder.record("server→client", packetID, packet);
-			console.log("[protanki-local]:", name, packetID);
+			console.log(`← ${name}`);
 			this.readReceivedKeys(packet);
 		} else {
 			this.decryptPacket(packet);
@@ -137,7 +137,9 @@ class ProTankiClient {
 			}
 			this.logger.packet("server→client", name, packetID, packet.buffer);
 			this.recorder.record("server→client", packetID, packet);
-			console.log("[protanki-local]:", name, packetID);
+
+			const fields = parse(packetID, packet);
+			console.log(`← ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
 			validate(packetID, packet, name);
 
@@ -159,9 +161,6 @@ class ProTankiClient {
 	}
 
 	sendPacket(packetID, packet = new ByteArray(), encryption = true) {
-		const name = packetName(packetID);
-		console.log("[local-protanki]:", name, packetID);
-		this.logger.packet("client→server", name, packetID, packet.buffer);
 		if (encryption) {
 			this.encryptPacket(packet);
 		}
