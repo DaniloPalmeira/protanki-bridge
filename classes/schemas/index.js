@@ -56,6 +56,20 @@ function serialize(packetId, fields) {
 }
 
 /**
+ * Format a parsed fields object as a human-readable string.
+ * Uses schema.describe(fields) if defined, otherwise auto-generates
+ * "field = value | field2 = value2" from the schema field list.
+ */
+function format(packetId, fields) {
+	const schema = getSchema(packetId);
+	if (!schema || !fields) return String(fields);
+	if (typeof schema.describe === "function") return schema.describe(fields);
+	return schema.fields
+		.map(({ name }) => `${name} = ${JSON.stringify(fields[name])}`)
+		.join(" | ");
+}
+
+/**
  * Validate a packet against its schema and print warnings.
  * Always operates on a clone — the original packet is untouched.
  */
@@ -89,4 +103,4 @@ function validate(packetId, packet, name) {
 	}
 }
 
-module.exports = { SCHEMAS, BY_ALIAS, lookupAlias, getSchema, parse, serialize, validate };
+module.exports = { SCHEMAS, BY_ALIAS, lookupAlias, getSchema, parse, serialize, validate, format };

@@ -1,11 +1,13 @@
-// LoginPacket — logs credentials sent by the client to the server.
+const { format } = require("../classes/schemas/index");
+const { lookupAlias } = require("../classes/schemas/index");
+
+const { id: packetId } = lookupAlias("login");
 
 module.exports = {
 	packet: "login",
 
-	handle({ username, password, rememberMe }) {
-		console.log("[login]: username =", username, "| rememberMe =", rememberMe);
-		// Return fields unchanged to pass through
-		return { username, password, rememberMe };
+	handle(fields) {
+		console.log("[login]:", format(packetId, fields));
+		return fields;
 	},
 };

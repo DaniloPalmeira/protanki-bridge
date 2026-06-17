@@ -58,6 +58,8 @@ module.exports = {
 			{ name: "password",   read: readUTF,     write: writeUTF     },
 			{ name: "rememberMe", read: readBoolean,  write: writeBoolean },
 		],
+		describe: ({ username, rememberMe }) =>
+			`username = ${username} | rememberMe = ${rememberMe}`,
 	},
 	"-349828108":  { alias: "getNewCaptcha",      direction: "out", fields: [] },
 	"-1507635228": { alias: "checkIsPasswordSet", direction: "out", fields: [] },
