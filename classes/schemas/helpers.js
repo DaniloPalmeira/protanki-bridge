@@ -58,8 +58,29 @@ function objectListOf(fields) {
 	};
 }
 
+// Nullable length-prefixed list: readBoolean (false = has data) + readInt count + N elements.
+// Matches the AS3 null-check pattern used for Vector.<String> and similar nullable collections.
+function nullableListOf(readElement, writeElement) {
+	return {
+		read() {
+			const isNull = this.readBoolean();
+			if (isNull) return null;
+			const count = this.readInt();
+			const items = [];
+			for (let i = 0; i < count; i++) items.push(readElement.call(this));
+			return items;
+		},
+		write(items) {
+			if (items == null) { this.writeBoolean(true); return; }
+			this.writeBoolean(false);
+			this.writeInt(items.length);
+			for (const item of items) writeElement.call(this, item);
+		},
+	};
+}
+
 // Resource IDs on wire are encoded as two int32s: { high, low }
 function readResourceId() { return { high: this.readInt(), low: this.readInt() }; }
 function writeResourceId(v) { this.writeInt(v.high); this.writeInt(v.low); }
 
-module.exports = { listOf, objectListOf, readResourceId, writeResourceId };
+module.exports = { listOf, objectListOf, nullableListOf, readResourceId, writeResourceId };
