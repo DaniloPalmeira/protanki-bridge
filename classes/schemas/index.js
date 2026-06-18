@@ -80,15 +80,16 @@ function format(packetId, fields) {
  * Validate a packet against its schema and print warnings.
  * Always operates on a clone — the original packet is untouched.
  */
-function validate(packetId, packet, name) {
+function validate(packetId, packet, name, tag = "") {
 	const schema = getSchema(packetId);
+	const prefix = tag ? `${tag} [schema]` : "[schema]";
 
 	const hex = Buffer.isBuffer(packet.buffer)
 		? packet.buffer.toString("hex")
 		: Buffer.from(packet.buffer).toString("hex");
 
 	if (!schema) {
-		console.warn(`[schema] no schema: ${name} (${packetId})`);
+		console.warn(`${prefix} no schema: ${name} (${packetId})`);
 		incomplete.record(packetId, name, "no schema", hex);
 		return;
 	}
@@ -96,7 +97,7 @@ function validate(packetId, packet, name) {
 	if (schema.fields.length === 0) {
 		const size = packet.bytesAvailable();
 		if (size > 0) {
-			console.warn(`[schema] ${name}: schema has no fields but payload is ${size} bytes — schema incomplete`);
+			console.warn(`${prefix} ${name}: schema has no fields but payload is ${size} bytes — schema incomplete`);
 			incomplete.record(packetId, name, `no fields, ${size} bytes payload`, hex);
 		}
 		return;
@@ -109,11 +110,11 @@ function validate(packetId, packet, name) {
 		}
 		const remaining = clone.bytesAvailable();
 		if (remaining > 0) {
-			console.warn(`[schema] ${name}: ${remaining} bytes remaining after parse — schema may be incomplete`);
+			console.warn(`${prefix} ${name}: ${remaining} bytes remaining after parse — schema may be incomplete`);
 			incomplete.record(packetId, name, `${remaining} bytes remaining`, hex);
 		}
 	} catch (e) {
-		console.warn(`[schema] ${name} (${packetId}): parse error — ${e.message}`);
+		console.warn(`${prefix} ${name} (${packetId}): parse error — ${e.message}`);
 		incomplete.record(packetId, name, `parse error: ${e.message}`, hex);
 	}
 }

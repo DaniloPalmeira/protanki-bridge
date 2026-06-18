@@ -146,7 +146,7 @@ class ProTankiServer {
 		this.recorder.record("client→server", packetID, packet);
 		console.log(`${this.tag} → ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
-		validate(packetID, packet, name);
+		validate(packetID, packet, name, this.tag);
 
 		packet = plugins.run("out", packetID, packet);
 
