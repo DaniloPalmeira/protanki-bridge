@@ -6,6 +6,8 @@ const plugins = require("./PluginManager");
 const SessionLogger = require("./SessionLogger");
 const { SessionRecorder } = require("./SessionRecorder");
 
+let sessionCounter = 0;
+
 class ProTankiServer {
 	decrypt_position = 0;
 	encrypt_position = 0;
@@ -16,14 +18,21 @@ class ProTankiServer {
 	constructor(data) {
 		Object.assign(this, data);
 
-		this.logger = new SessionLogger();
-		this.recorder = new SessionRecorder();
+		// Unique id per connection so logs/recordings/console never mix
+		// between simultaneous clients. Counter disambiguates within a run,
+		// remote port disambiguates across restarts.
+		const num = ++sessionCounter;
+		this.sessionId = `s${num}-${this.socket.remotePort}`;
+		this.tag = `[s${num}]`;
+
+		this.logger = new SessionLogger(this.sessionId);
+		this.recorder = new SessionRecorder(this.sessionId);
 		this.client = new ProTankiClient(this, this.logger, this.recorder);
 
 		this.rawDataReceived = new ByteArray(Buffer.alloc(0));
 
 		this.logger.info(`Client connected: ${this.socket.remoteAddress}`);
-		console.log("Connected with client", this.socket.remoteAddress);
+		console.log(this.tag, "Connected with client", this.socket.remoteAddress);
 
 		this.socket.on("data", (data) => this.onDataReceived(data));
 		this.socket.on("close", () => this.onConnectionClose());
@@ -35,7 +44,7 @@ class ProTankiServer {
 		this.logger.info(`Client disconnected: ${this.socket.remoteAddress}`);
 		this.logger.close();
 		this.recorder.close();
-		console.log("Disconnected from client", this.socket.remoteAddress);
+		console.log(this.tag, "Disconnected from client", this.socket.remoteAddress);
 	}
 
 	gerateCryptKeys(keys) {
@@ -135,7 +144,7 @@ class ProTankiServer {
 		const fields = parse(packetID, packet);
 		this.logger.packet("client→server", name, packetID, packet.buffer, fields);
 		this.recorder.record("client→server", packetID, packet);
-		console.log(`→ ${name}${fields ? ": " + format(packetID, fields) : ""}`);
+		console.log(`${this.tag} → ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
 		validate(packetID, packet, name);
 

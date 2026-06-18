@@ -28,7 +28,7 @@ class ProTankiClient {
 			{ host: "194.67.196.216", port: 25565 },
 			() => {
 				this.logger.info("Connected to game server");
-				console.log("Connected to game server");
+				console.log(this.server.tag, "Connected to game server");
 			}
 		);
 		this.socket.on("data", (data) => {
@@ -37,7 +37,7 @@ class ProTankiClient {
 		this.socket.on("end", () => {
 			this.server.socket.end();
 			this.logger.info("Disconnected from game server");
-			console.log("Disconnected from game server");
+			console.log(this.server.tag, "Disconnected from game server");
 		});
 	}
 
@@ -113,6 +113,7 @@ class ProTankiClient {
 		} else {
 			this.rawDataReceived.writeIntStart(rawLen);
 			console.log(
+				this.server.tag,
 				"Pacote imcompleto",
 				possibleLen,
 				this.rawDataReceived.bytesAvailable()
@@ -127,7 +128,7 @@ class ProTankiClient {
 		if (packetID == 2001736388) {
 			this.logger.packet("server→client", name, packetID, packet.buffer);
 			this.recorder.record("server→client", packetID, packet);
-			console.log(`← ${name}`);
+			console.log(`${this.server.tag} ← ${name}`);
 			this.readReceivedKeys(packet);
 		} else {
 			this.decryptPacket(packet);
@@ -138,7 +139,7 @@ class ProTankiClient {
 			const fields = parse(packetID, packet);
 			this.logger.packet("server→client", name, packetID, packet.buffer, fields);
 			this.recorder.record("server→client", packetID, packet);
-			console.log(`← ${name}${fields ? ": " + format(packetID, fields) : ""}`);
+			console.log(`${this.server.tag} ← ${name}${fields ? ": " + format(packetID, fields) : ""}`);
 
 			validate(packetID, packet, name);
 

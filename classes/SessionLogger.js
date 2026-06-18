@@ -8,16 +8,17 @@ class SessionLogger {
 	#filePath = null;
 	#stats    = { "server→client": {}, "client→server": {} };
 
-	constructor() {
+	constructor(sessionId = "") {
 		if (!fs.existsSync(LOGS_DIR)) fs.mkdirSync(LOGS_DIR, { recursive: true });
 
 		const now = new Date();
 		const pad = (n) => String(n).padStart(2, "0");
 		const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+		const suffix = sessionId ? `_${sessionId}` : "";
 
-		this.#filePath = path.join(LOGS_DIR, `${stamp}.ndjson`);
+		this.#filePath = path.join(LOGS_DIR, `${stamp}${suffix}.ndjson`);
 		this.#stream   = fs.createWriteStream(this.#filePath, { flags: "a" });
-		this.#write({ type: "session_start", ts: now.toISOString() });
+		this.#write({ type: "session_start", ts: now.toISOString(), session: sessionId });
 		console.log(`[log] session log → ${this.#filePath}`);
 	}
 

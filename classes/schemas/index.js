@@ -35,10 +35,16 @@ function parse(packetId, packet) {
 
 	const clone = new ByteArray(packet.buffer);
 	const result = {};
-	for (const field of schema.fields) {
-		result[field.name] = field.read.call(clone);
+	try {
+		for (const field of schema.fields) {
+			result[field.name] = field.read.call(clone);
+		}
+		result.__remaining = clone.bytesAvailable();
+	} catch (e) {
+		// Schema/payload mismatch — never crash the bridge over a parse used
+		// only for logging. Keep whatever fields we read and flag the error.
+		result.__parseError = e.message;
 	}
-	result.__remaining = clone.bytesAvailable();
 	return result;
 }
 

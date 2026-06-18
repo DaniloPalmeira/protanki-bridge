@@ -10,15 +10,16 @@ class SessionRecorder {
 	#stream = null;
 	#filePath = null;
 
-	constructor() {
+	constructor(sessionId = "") {
 		if (!fs.existsSync(RECORDINGS_DIR))
 			fs.mkdirSync(RECORDINGS_DIR, { recursive: true });
 
 		const now = new Date();
 		const pad = (n) => String(n).padStart(2, "0");
 		const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+		const suffix = sessionId ? `_${sessionId}` : "";
 
-		this.#filePath = path.join(RECORDINGS_DIR, `${stamp}.bin`);
+		this.#filePath = path.join(RECORDINGS_DIR, `${stamp}${suffix}.bin`);
 		this.#stream = fs.createWriteStream(this.#filePath);
 		console.log(`[rec] recording → ${this.#filePath}`);
 	}
