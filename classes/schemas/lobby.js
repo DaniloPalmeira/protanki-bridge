@@ -2,39 +2,139 @@ const {
 	readUTF,     writeUTF,
 	readBoolean, writeBoolean,
 	readInt,     writeInt,
+	readByte,    writeByte,
+	readFloat,   writeFloat,
 } = require("../ByteArray").prototype;
+
+// Enum codecs (CodecBattleTeam, CodecLayoutState, CodecValidationStatus, …) encode the
+// enum's int .value as a single int32 on the wire.
+const readEnum = readInt, writeEnum = writeInt;
 
 module.exports = {
 	// server → client
 	"-1923286328": { alias: "enter",                      direction: "in", fields: [] },
-	1118835050:    { alias: "beginLayoutSwitch",           direction: "in", fields: [] },
-	"-593368100":  { alias: "endLayoutSwitch",             direction: "in", fields: [] },
-	1405859779:    { alias: "initPremium",                 direction: "in", fields: [] },
+	1118835050: {
+		alias: "beginLayoutSwitch",
+		direction: "in",
+		fields: [
+			{ name: "state", read: readEnum, write: writeEnum }, // CodecLayoutState(target)
+		],
+	},
+	"-593368100": {
+		alias: "endLayoutSwitch",
+		direction: "in",
+		fields: [
+			{ name: "origin", read: readEnum, write: writeEnum }, // CodecLayoutState(from)
+			{ name: "target", read: readEnum, write: writeEnum }, // CodecLayoutState(to)
+		],
+	},
+	1405859779: {
+		alias: "initPremium",
+		direction: "in",
+		fields: [
+			{ name: "flag1",     read: readBoolean, write: writeBoolean },
+			{ name: "flag2",     read: readBoolean, write: writeBoolean },
+			{ name: "value",     read: readFloat,   write: writeFloat   },
+			{ name: "flag3",     read: readBoolean, write: writeBoolean },
+			{ name: "flag4",     read: readBoolean, write: writeBoolean },
+			{ name: "count",     read: readInt,     write: writeInt     },
+		],
+	},
 	"-1232334539": { alias: "initUserCountryModel",        direction: "in", fields: [] },
 	907073245:     { alias: "initPanel",                   direction: "in", fields: [] },
 	834877801:     { alias: "initBattleInviteModel",       direction: "in", fields: [] },
 	1422563374:    { alias: "initFriendsList",             direction: "in", fields: [] },
 	"-1481254568": { alias: "initAchievementModel",        direction: "in", fields: [] },
-	832270655:     { alias: "initReferrerPanelModel",      direction: "in", fields: [] },
+	832270655: {
+		alias: "initReferrerPanelModel",
+		direction: "in",
+		fields: [
+			{ name: "url",     read: readUTF, write: writeUTF },
+			{ name: "message", read: readUTF, write: writeUTF },
+		],
+	},
 	178154988:     { alias: "initChatModel",               direction: "in", fields: [] },
 	"-1263520410": { alias: "showMessages",                direction: "in", fields: [] },
 	"-583564465":  { alias: "initSocialNetworkPanelModel", direction: "in", fields: [] },
-	"-962759489":  { alias: "setRank",                     direction: "in", fields: [] },
-	"-2069508071": { alias: "setPremiumTimeLeft",          direction: "in", fields: [] },
-	"-117055417":  { alias: "setClan",                     direction: "in", fields: [] },
+	"-962759489": {
+		alias: "setRank",
+		direction: "in",
+		fields: [
+			{ name: "rank",   read: readByte, write: writeByte }, // byte(rank)
+			{ name: "userId", read: readUTF,  write: writeUTF  },
+		],
+	},
+	"-2069508071": {
+		alias: "setPremiumTimeLeft",
+		direction: "in",
+		fields: [
+			{ name: "secondsLeft", read: readInt, write: writeInt }, // -1 = none
+			{ name: "userId",      read: readUTF, write: writeUTF },
+		],
+	},
+	"-117055417": {
+		alias: "setClan",
+		direction: "in",
+		fields: [
+			{ name: "hasClan", read: readBoolean, write: writeBoolean },
+			{ name: "clanTag", read: readUTF,     write: writeUTF     },
+			{ name: "userId",  read: readUTF,     write: writeUTF     },
+		],
+	},
 	"-1895446889": { alias: "setBattle",                   direction: "in", fields: [] },
 	"-1338449818": { alias: "initUserClanModels",          direction: "in", fields: [] },
 	"-1855118498": { alias: "showForeignClanWindow",       direction: "in", fields: [] },
-	"-1565553333": { alias: "validateResult",              direction: "in", fields: [] },
+	"-1565553333": {
+		alias: "validateResult",
+		direction: "in",
+		fields: [
+			{ name: "status", read: readEnum, write: writeEnum }, // CodecValidationStatus
+		],
+	},
 	"-1266665816": { alias: "skipDailyQuest",              direction: "in", fields: [] },
-	"-169305322":  { alias: "onReserveSlotTeam",           direction: "in", fields: [] },
-	2041598093:    { alias: "setOnline",                   direction: "in", fields: [] },
+	"-169305322": {
+		alias: "onReserveSlotTeam",
+		direction: "in",
+		fields: [
+			{ name: "battleId", read: readUTF,  write: writeUTF  },
+			{ name: "userId",   read: readUTF,  write: writeUTF  },
+			{ name: "team",     read: readEnum, write: writeEnum }, // CodecBattleTeam
+		],
+	},
+	2041598093: {
+		alias: "setOnline",
+		direction: "in",
+		fields: [
+			{ name: "online", read: readBoolean, write: writeBoolean },
+			{ name: "place",  read: readInt,     write: writeInt     },
+			{ name: "userId", read: readUTF,     write: writeUTF     },
+		],
+	},
 	134406915:     { alias: "setClanRatingsData",          direction: "in", fields: [] },
 	560344632:     { alias: "showNotInClanWindow",         direction: "in", fields: [] },
 	809822533:     { alias: "showQuestWindow",             direction: "in", fields: [] },
-	1428217189:    { alias: "updateTeamScore",             direction: "in", fields: [] },
+	1428217189: {
+		alias: "updateTeamScore",
+		direction: "in",
+		fields: [
+			{ name: "battleId", read: readUTF,  write: writeUTF  },
+			{ name: "team",     read: readEnum, write: writeEnum }, // CodecBattleTeam
+			{ name: "score",    read: readInt,  write: writeInt  },
+		],
+	},
 	1587315905:    { alias: "openReferrerPanel",           direction: "in", fields: [] },
-	118447426:     { alias: "addUserTeam",                 direction: "in", fields: [] },
+	118447426: {
+		alias: "addUserTeam",
+		direction: "in",
+		fields: [
+			{ name: "userId",     read: readUTF,     write: writeUTF     },
+			{ name: "kills",      read: readInt,     write: writeInt     },
+			{ name: "score",      read: readInt,     write: writeInt     },
+			{ name: "suspicious", read: readBoolean, write: writeBoolean },
+			{ name: "userName",   read: readUTF,     write: writeUTF     },
+			{ name: "team",       read: readEnum,    write: writeEnum    }, // CodecBattleTeam
+		],
+	},
 
 	744948472: {
 		alias: "updateTypingSpeedAntiflood",

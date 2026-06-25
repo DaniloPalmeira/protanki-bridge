@@ -83,4 +83,17 @@ function nullableListOf(readElement, writeElement) {
 function readResourceId() { return { high: this.readInt(), low: this.readInt() }; }
 function writeResourceId(v) { this.writeInt(v.high); this.writeInt(v.low); }
 
-module.exports = { listOf, objectListOf, nullableListOf, readResourceId, writeResourceId };
+// Nullable 3D vector (position): 1 null-flag byte, then 3 float32 (x, y, z) when present.
+// Matches the client's optional CodecVector3 (e.g. spawn position, mine drop point).
+function readOptionalVec3() {
+	const isNull = this.readBoolean();
+	if (isNull) return null;
+	return { x: this.readFloat(), y: this.readFloat(), z: this.readFloat() };
+}
+function writeOptionalVec3(v) {
+	if (v == null) { this.writeBoolean(true); return; }
+	this.writeBoolean(false);
+	this.writeFloat(v.x); this.writeFloat(v.y); this.writeFloat(v.z);
+}
+
+module.exports = { listOf, objectListOf, nullableListOf, readResourceId, writeResourceId, readOptionalVec3, writeOptionalVec3 };

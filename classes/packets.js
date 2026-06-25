@@ -135,6 +135,12 @@ const PACKETS = {
 	"-114968993": "RotateTurretCommandPacket",
 	1211186637: "UnloadModelPacket",
 
+	// battle scoreboard / statistics — derived from decompiled controllers (clear field signal)
+	561771020: "UpdateTeamStatisticsScorePacket", // StatisticsTeamModel: CodecBattleTeam(team) + int(score)
+	2040021062: "AddStatisticsUserPacket", // StatisticsTeamModel: uid + list + CodecBattleTeam(team)
+	"-1263036614": "UpdateUserKillsPacket", // battle scoreboard: battleId + uid + int(kills) — parallel to UpdateUserScore
+	120401338: "SetBattleCreationNamePacket", // InitBattleCreateModel group: utf(name)
+
 	// login / registration / recovery — identified from server/packets/ids.js
 	// server → client
 	442888643: "NickSuggestionsPacket",

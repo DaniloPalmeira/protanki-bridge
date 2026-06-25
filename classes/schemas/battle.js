@@ -3,7 +3,13 @@ const {
 	readBoolean, writeBoolean,
 	readInt,     writeInt,
 	readFloat,   writeFloat,
+	readShort,   writeShort,
+	readByte,    writeByte,
 } = require("../ByteArray").prototype;
+const { readOptionalVec3, writeOptionalVec3 } = require("./helpers");
+
+// Enum codecs (CodecBattleTeam, …) encode the enum's int .value as a single int32.
+const readEnum = readInt, writeEnum = writeInt;
 
 module.exports = {
 	// server → client
@@ -53,7 +59,18 @@ module.exports = {
 			{ name: "json", read: readUTF, write: writeUTF },
 		],
 	},
-	875259457:  { alias: "spawn",                    direction: "in", fields: [] },
+	875259457: {
+		alias: "spawn",
+		direction: "in",
+		fields: [
+			{ name: "userId",      read: readUTF,            write: writeUTF            },
+			{ name: "team",        read: readEnum,           write: writeEnum           }, // CodecBattleTeam
+			{ name: "position",    read: readOptionalVec3,   write: writeOptionalVec3   },
+			{ name: "orientation", read: readOptionalVec3,   write: writeOptionalVec3   },
+			{ name: "incarnation", read: readShort,          write: writeShort          },
+			{ name: "health",      read: readShort,          write: writeShort          },
+		],
+	},
 	1156768699: { alias: "disablePause",             direction: "in", fields: [] },
 	1178028365: { alias: "activateTankCommand",      direction: "in", fields: [] },
 	1411656080: {
@@ -72,7 +89,15 @@ module.exports = {
 		],
 	},
 	1758551995: { alias: "initMeteorStormModel",     direction: "in", fields: [] },
-	1831462385: { alias: "spawnBonus",               direction: "in", fields: [] },
+	1831462385: {
+		alias: "spawnBonus",
+		direction: "in",
+		fields: [
+			{ name: "id",       read: readUTF,          write: writeUTF          },
+			{ name: "position", read: readOptionalVec3, write: writeOptionalVec3 },
+			{ name: "bonusType", read: readInt,         write: writeInt          },
+		],
+	},
 	1868573511: {
 		alias: "activateTank",
 		direction: "in",
@@ -138,9 +163,9 @@ module.exports = {
 		alias: "movementControlCommand",
 		direction: "in",
 		fields: [
-			{ name: "control", read: readInt, write: writeInt },
-			{ name: "x",       read: readInt, write: writeInt },
-			{ name: "y",       read: readInt, write: writeInt },
+			{ name: "control", read: readInt,   write: writeInt   },
+			{ name: "x",       read: readShort, write: writeShort },
+			{ name: "y",       read: readByte,  write: writeByte  },
 		],
 	},
 	"-1683279062": { alias: "fullMoveCommand",       direction: "in", fields: [] },
@@ -153,18 +178,14 @@ module.exports = {
 			{ name: "y",     read: readFloat, write: writeFloat },
 			{ name: "z",     read: readFloat, write: writeFloat },
 			{ name: "w",     read: readFloat, write: writeFloat },
-			{ name: "flags", read: readInt,   write: writeInt   },
+			{ name: "flags", read: readShort, write: writeShort },
 		],
 	},
 	"-1643824092": {
 		alias: "initTank",
 		direction: "in",
 		fields: [
-			{ name: "id",          read: readUTF,     write: writeUTF     },
-			{ name: "teamType",    read: readInt,      write: writeInt     },
-			{ name: "incarnation", read: readInt,      write: writeInt     },
-			{ name: "active",      read: readBoolean,  write: writeBoolean },
-			{ name: "hull",        read: readInt,      write: writeInt     },
+			{ name: "id", read: readUTF, write: writeUTF },
 		],
 	},
 	"-1639713644": {
@@ -175,11 +196,17 @@ module.exports = {
 			{ name: "effectType", read: readInt,      write: writeInt     },
 			{ name: "duration",   read: readInt,      write: writeInt     },
 			{ name: "activation", read: readBoolean,  write: writeBoolean },
-			{ name: "flags",      read: readInt,      write: writeInt     },
+			{ name: "flags",      read: readByte,     write: writeByte    },
 		],
 	},
 	"-1378839846": { alias: "readyToPlace",          direction: "in", fields: [] },
-	"-1284211503": { alias: "fight",                 direction: "in", fields: [] },
+	"-1284211503": {
+		alias: "fight",
+		direction: "in",
+		fields: [
+			{ name: "team", read: readEnum, write: writeEnum }, // CodecBattleTeam
+		],
+	},
 	"-1233891872": { alias: "initStatisticsTeamModel", direction: "in", fields: [] },
 	"-1200619383": {
 		alias: "removeMines",
@@ -225,6 +252,15 @@ module.exports = {
 			{ name: "json", read: readUTF, write: writeUTF },
 		],
 	},
-	"-114968993":  { alias: "rotateTurretCommand",   direction: "in", fields: [] },
+	"-114968993": {
+		alias: "rotateTurretCommand",
+		direction: "in",
+		fields: [
+			{ name: "control",     read: readInt,   write: writeInt   },
+			{ name: "angle",       read: readFloat, write: writeFloat },
+			{ name: "controlType", read: readByte,  write: writeByte  },
+			{ name: "incarnation", read: readShort, write: writeShort },
+		],
+	},
 	1211186637:    { alias: "unloadModel",           direction: "in", fields: [] },
 };
