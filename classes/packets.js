@@ -123,6 +123,7 @@ const PACKETS = {
 	"-959048700": "InitRegionsModelPacket",
 	"-920985123": "UnloadBattleEntityPacket",
 	"-643105296": "InitBattleChatModelPacket",
+	1259981343: "BattleChatMessagePacket", // chat model: nick + text + BattleTeam (handler = addMessage)
 	"-624217047": "ActivateMinePacket",
 	"-611961116": "SetHealthPacket",
 	"-497293992": "ChangeUserStatPacket",
@@ -133,6 +134,20 @@ const PACKETS = {
 	"-137249251": "InitInventoryItemModelPacket",
 	"-114968993": "RotateTurretCommandPacket",
 	1211186637: "UnloadModelPacket",
+
+	// login / registration / recovery — identified from server/packets/ids.js
+	// server → client
+	442888643: "NickSuggestionsPacket",
+	"-706679202": "UsernameAvailablePacket",
+	"-373510957": "NewCaptchaPacket",
+	"-819536476": "CaptchaResultPacket",
+	"-262455387": "EmailNotFoundPacket",
+	"-1607756600": "EmailFoundPacket",
+	// client → server
+	903498755: "RecoveryCodePacket",
+	1083705823: "CheckUsernamePacket",
+	1271163230: "ValidateCaptchaPacket",
+	1744584433: "CheckEmailPacket",
 
 	// client → server
 	"-1864333717": "SetLangPacket",
