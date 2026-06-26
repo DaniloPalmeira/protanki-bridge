@@ -100,6 +100,12 @@ class ProTankiClient {
 			this.rawDataReceived.write(data);
 		}
 
+		// Need at least the 4-byte length prefix before we can frame a packet.
+		// A TCP segment can split mid-prefix; leave the partial bytes buffered.
+		if (this.rawDataReceived.bytesAvailable() < 4) {
+			return;
+		}
+
 		var rawLen = this.rawDataReceived.readInt();
 		var lenFlags = rawLen & 0xc0000000;
 		var possibleLen = (rawLen & 0x3fffffff) - 4;
