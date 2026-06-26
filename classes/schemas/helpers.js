@@ -96,4 +96,66 @@ function writeOptionalVec3(v) {
 	this.writeFloat(v.x); this.writeFloat(v.y); this.writeFloat(v.z);
 }
 
-module.exports = { listOf, objectListOf, nullableListOf, readResourceId, writeResourceId, readOptionalVec3, writeOptionalVec3 };
+// ── Token compiler ───────────────────────────────────────────────────────────
+// Builds a { read, write } pair from a wire-token derived from the decompiled
+// client codecs. Tokens:
+//   "int" "short" "byte" "float" "double" "long" "utf" "bool"  — primitives
+//   { opt: [ [name, token], … ] }                  — optional struct (1 null-flag byte)
+//   { list: [ [name, token], … ], nullable: bool } — list (nullable = leading null-flag)
+// A list/opt body that is a single bare token (not [name, token] pairs) encodes a
+// scalar element instead of an object.
+const BA = require("../ByteArray").prototype;
+const P = {
+	int:   { read: BA.readInt,     write: BA.writeInt     },
+	short: { read: BA.readShort,   write: BA.writeShort   },
+	byte:  { read: BA.readByte,    write: BA.writeByte    },
+	float: { read: BA.readFloat,   write: BA.writeFloat   },
+	double:{ read: BA.readDouble,  write: BA.writeDouble  },
+	utf:   { read: BA.readUTF,     write: BA.writeUTF     },
+	bool:  { read: BA.readBoolean, write: BA.writeBoolean },
+	long:  { read: readResourceId, write: writeResourceId }, // {high, low}
+};
+function rw(token) {
+	if (typeof token === "string") {
+		const p = P[token];
+		if (!p) throw new Error("unknown token: " + token);
+		return p;
+	}
+	if (token.opt) {
+		const body = structRW(token.opt);
+		return {
+			read() { if (this.readBoolean()) return null; return body.read.call(this); },
+			write(v) { if (v == null) { this.writeBoolean(true); return; } this.writeBoolean(false); body.write.call(this, v); },
+		};
+	}
+	if (token.list) {
+		const body = structRW(token.list);
+		return {
+			read() {
+				if (token.nullable && this.readBoolean()) return null;
+				const n = this.readInt(); const a = [];
+				for (let i = 0; i < n; i++) a.push(body.read.call(this));
+				return a;
+			},
+			write(arr) {
+				if (token.nullable) { if (arr == null) { this.writeBoolean(true); return; } this.writeBoolean(false); }
+				this.writeInt(arr.length);
+				for (const it of arr) body.write.call(this, it);
+			},
+		};
+	}
+	throw new Error("bad token: " + JSON.stringify(token));
+}
+// struct body: array of [name, token] pairs → object; or a single bare token → scalar
+function structRW(def) {
+	if (def.length === 1 && !Array.isArray(def[0])) return rw(def[0]);
+	const fields = def.map(([name, token]) => ({ name, ...rw(token) }));
+	return {
+		read() { const o = {}; for (const f of fields) o[f.name] = f.read.call(this); return o; },
+		write(v) { for (const f of fields) f.write.call(this, v[f.name]); },
+	};
+}
+// Build a schema fields[] array from [name, token] pairs.
+function fieldsOf(def) { return def.map(([name, token]) => ({ name, ...rw(token) })); }
+
+module.exports = { listOf, objectListOf, nullableListOf, readResourceId, writeResourceId, readOptionalVec3, writeOptionalVec3, rw, fieldsOf };

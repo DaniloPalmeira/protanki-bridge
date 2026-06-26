@@ -42,8 +42,6 @@ module.exports = {
 			{ name: "userId", read: readUTF,   write: writeUTF   },
 		],
 	},
-	329279865:  { alias: "moveCommand",              direction: "in", fields: [] },
-	377959142:  { alias: "exitFromBattle",           direction: "in", fields: [] },
 	417965410: {
 		alias: "initEffects",
 		direction: "in",
@@ -51,7 +49,6 @@ module.exports = {
 			{ name: "json", read: readUTF, write: writeUTF },
 		],
 	},
-	522993449:  { alias: "initStatisticsModel",      direction: "in", fields: [] },
 	870278784: {
 		alias: "initBonuses",
 		direction: "in",
@@ -88,7 +85,6 @@ module.exports = {
 			{ name: "json", read: readUTF, write: writeUTF },
 		],
 	},
-	1758551995: { alias: "initMeteorStormModel",     direction: "in", fields: [] },
 	1831462385: {
 		alias: "spawnBonus",
 		direction: "in",
@@ -168,7 +164,6 @@ module.exports = {
 			{ name: "y",       read: readByte,  write: writeByte  },
 		],
 	},
-	"-1683279062": { alias: "fullMoveCommand",       direction: "in", fields: [] },
 	"-1672577397": {
 		alias: "setSpecification",
 		direction: "in",
@@ -207,7 +202,6 @@ module.exports = {
 			{ name: "team", read: readEnum, write: writeEnum }, // CodecBattleTeam
 		],
 	},
-	"-1233891872": { alias: "initStatisticsTeamModel", direction: "in", fields: [] },
 	"-1200619383": {
 		alias: "removeMines",
 		direction: "in",
@@ -216,7 +210,6 @@ module.exports = {
 		],
 	},
 	"-985579124":  { alias: "unloadBattleModel",     direction: "in", fields: [] },
-	"-959048700":  { alias: "initRegionsModel",      direction: "in", fields: [] },
 	"-920985123":  { alias: "unloadBattleEntity",    direction: "in", fields: [] },
 	"-643105296":  { alias: "initBattleChatModel",   direction: "in", fields: [] },
 	"-624217047": {
@@ -234,10 +227,14 @@ module.exports = {
 			{ name: "health", read: readFloat, write: writeFloat },
 		],
 	},
-	"-497293992":  { alias: "changeUserStat",        direction: "in", fields: [] },
-	"-484994657":  { alias: "fireCommand",           direction: "in", fields: [] },
-	"-226978906":  { alias: "initBattleMinesModel",  direction: "in", fields: [] },
-	"-157204477":  { alias: "prepareToSpawn",        direction: "in", fields: [] },
+	"-157204477": {
+		alias: "prepareToSpawn",
+		direction: "in",
+		fields: [
+			{ name: "position",    read: readOptionalVec3, write: writeOptionalVec3 },
+			{ name: "orientation", read: readOptionalVec3, write: writeOptionalVec3 },
+		],
+	},
 	"-152638117": {
 		alias: "initBattlefieldModel",
 		direction: "in",

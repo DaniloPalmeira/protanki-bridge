@@ -59,6 +59,13 @@ class ByteArray {
 		return this;
 	}
 
+	writeDouble(value) {
+		let buffer = new Buffer.alloc(8);
+		buffer.writeDoubleBE(value);
+		this.buffer = Buffer.concat([this.buffer, buffer]);
+		return this;
+	}
+
 	writeUTF(value = null) {
 		if (value == null) {
 			this.writeBoolean(true);
@@ -122,6 +129,13 @@ class ByteArray {
 	readFloat() {
 		let value = this.buffer.slice(0, 4).readFloatBE();
 		this.buffer = this.buffer.slice(4);
+
+		return value;
+	}
+
+	readDouble() {
+		let value = this.buffer.slice(0, 8).readDoubleBE();
+		this.buffer = this.buffer.slice(8);
 
 		return value;
 	}

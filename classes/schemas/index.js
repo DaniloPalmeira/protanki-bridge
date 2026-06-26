@@ -6,6 +6,7 @@ const SCHEMAS = {
 	...require("./login"),
 	...require("./lobby"),
 	...require("./battle"),
+	...require("./structs"), // nested-structure packets (override empty stubs above)
 };
 
 // alias → packetId string

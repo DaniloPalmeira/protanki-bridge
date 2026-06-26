@@ -40,11 +40,6 @@ module.exports = {
 			{ name: "count",     read: readInt,     write: writeInt     },
 		],
 	},
-	"-1232334539": { alias: "initUserCountryModel",        direction: "in", fields: [] },
-	907073245:     { alias: "initPanel",                   direction: "in", fields: [] },
-	834877801:     { alias: "initBattleInviteModel",       direction: "in", fields: [] },
-	1422563374:    { alias: "initFriendsList",             direction: "in", fields: [] },
-	"-1481254568": { alias: "initAchievementModel",        direction: "in", fields: [] },
 	832270655: {
 		alias: "initReferrerPanelModel",
 		direction: "in",
@@ -53,9 +48,6 @@ module.exports = {
 			{ name: "message", read: readUTF, write: writeUTF },
 		],
 	},
-	178154988:     { alias: "initChatModel",               direction: "in", fields: [] },
-	"-1263520410": { alias: "showMessages",                direction: "in", fields: [] },
-	"-583564465":  { alias: "initSocialNetworkPanelModel", direction: "in", fields: [] },
 	"-962759489": {
 		alias: "setRank",
 		direction: "in",
@@ -81,9 +73,6 @@ module.exports = {
 			{ name: "userId",  read: readUTF,     write: writeUTF     },
 		],
 	},
-	"-1895446889": { alias: "setBattle",                   direction: "in", fields: [] },
-	"-1338449818": { alias: "initUserClanModels",          direction: "in", fields: [] },
-	"-1855118498": { alias: "showForeignClanWindow",       direction: "in", fields: [] },
 	"-1565553333": {
 		alias: "validateResult",
 		direction: "in",
@@ -91,7 +80,6 @@ module.exports = {
 			{ name: "status", read: readEnum, write: writeEnum }, // CodecValidationStatus
 		],
 	},
-	"-1266665816": { alias: "skipDailyQuest",              direction: "in", fields: [] },
 	"-169305322": {
 		alias: "onReserveSlotTeam",
 		direction: "in",
@@ -110,9 +98,6 @@ module.exports = {
 			{ name: "userId", read: readUTF,     write: writeUTF     },
 		],
 	},
-	134406915:     { alias: "setClanRatingsData",          direction: "in", fields: [] },
-	560344632:     { alias: "showNotInClanWindow",         direction: "in", fields: [] },
-	809822533:     { alias: "showQuestWindow",             direction: "in", fields: [] },
 	1428217189: {
 		alias: "updateTeamScore",
 		direction: "in",
@@ -122,7 +107,6 @@ module.exports = {
 			{ name: "score",    read: readInt,  write: writeInt  },
 		],
 	},
-	1587315905:    { alias: "openReferrerPanel",           direction: "in", fields: [] },
 	118447426: {
 		alias: "addUserTeam",
 		direction: "in",
