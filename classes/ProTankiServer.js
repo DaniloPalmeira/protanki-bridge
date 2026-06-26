@@ -40,6 +40,10 @@ class ProTankiServer {
 	}
 
 	onConnectionClose() {
+		// Wired to both 'close' and 'error' — guard against running twice.
+		if (this.closed) return;
+		this.closed = true;
+
 		this.client.socket.end();
 		this.logger.info(`Client disconnected: ${this.socket.remoteAddress}`);
 		this.logger.close();

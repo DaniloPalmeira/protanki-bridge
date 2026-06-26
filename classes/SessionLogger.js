@@ -6,6 +6,7 @@ const LOGS_DIR = path.join(__dirname, "../logs");
 class SessionLogger {
 	#stream   = null;
 	#filePath = null;
+	#closed   = false;
 	#stats    = { "server→client": {}, "client→server": {} };
 
 	constructor(sessionId = "") {
@@ -18,11 +19,14 @@ class SessionLogger {
 
 		this.#filePath = path.join(LOGS_DIR, `${stamp}${suffix}.ndjson`);
 		this.#stream   = fs.createWriteStream(this.#filePath, { flags: "a" });
+		// Avoid crashing the process on a late write / EPIPE after the stream ends.
+		this.#stream.on("error", () => { this.#closed = true; });
 		this.#write({ type: "session_start", ts: now.toISOString(), session: sessionId });
 		console.log(`[log] session log → ${this.#filePath}`);
 	}
 
 	#write(obj) {
+		if (this.#closed || !this.#stream.writable) return;
 		this.#stream.write(JSON.stringify(obj) + "\n");
 	}
 
@@ -52,6 +56,7 @@ class SessionLogger {
 	}
 
 	close() {
+		if (this.#closed) return;
 		const stats = {};
 		for (const [dir, bucket] of Object.entries(this.#stats)) {
 			stats[dir] = Object.entries(bucket)
@@ -60,6 +65,7 @@ class SessionLogger {
 		}
 
 		this.#write({ type: "session_end", ts: new Date().toISOString(), stats });
+		this.#closed = true;
 		this.#stream.end();
 
 		// Print stats to console
